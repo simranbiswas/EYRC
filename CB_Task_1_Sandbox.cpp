@@ -11,6 +11,8 @@ double proportional, integral = 0, lastproportional = 0, derivative;
 float kp = 98, ki = 96.1, kd = 4;
 int path[7][8], selected_path_nodes[10];
 
+int path_queue[50], front = -1, back = -1;
+
 void pid(double pos)
 {
 	proportional = pos - 1000;
@@ -64,7 +66,7 @@ void forward_wls(unsigned char node)
 			velocity(100, 100);
 		}
 		//Goes left if the bot is deflected towards left
-		else if ((left_sensor ==255  && right_sensor == 0 && mid_sensor == 0) || (left_sensor ==255 && right_sensor == 0 && mid_sensor ==255))
+		else if ((left_sensor == 255 && right_sensor == 0 && mid_sensor == 0) || (left_sensor == 255 && right_sensor == 0 && mid_sensor == 255))
 		{
 			printf("\nLEFT");
 			lvalue = 1;
@@ -75,11 +77,11 @@ void forward_wls(unsigned char node)
 				left_sensor = int(ADC_Conversion(1));
 				right_sensor = int(ADC_Conversion(3));
 				mid_sensor = int(ADC_Conversion(2));
-				if ((left_sensor ==255 && right_sensor ==255 && mid_sensor > 0) || (left_sensor == 0 && right_sensor == 0 && mid_sensor == 0))
+				if ((left_sensor == 255 && right_sensor == 255 && mid_sensor > 0) || (left_sensor == 0 && right_sensor == 0 && mid_sensor == 0))
 				{
 					break;
 				}
-			} while (left_sensor==255);
+			} while (left_sensor == 255);
 			//forward();
 
 			printf("\n%d,%d,%d", left_sensor, mid_sensor, right_sensor);
@@ -87,7 +89,7 @@ void forward_wls(unsigned char node)
 
 		}
 		//Goes right if the bot is deflected towards right
-		else if ((left_sensor == 0 && right_sensor==255 && mid_sensor == 0) || (left_sensor == 0 && right_sensor ==255 && mid_sensor ==255))
+		else if ((left_sensor == 0 && right_sensor == 255 && mid_sensor == 0) || (left_sensor == 0 && right_sensor == 255 && mid_sensor == 255))
 		{
 			printf("\nRIGHT");
 			rvalue = 1;
@@ -98,19 +100,19 @@ void forward_wls(unsigned char node)
 				left_sensor = int(ADC_Conversion(1));
 				right_sensor = int(ADC_Conversion(3));
 				mid_sensor = int(ADC_Conversion(2));
-				if ((left_sensor ==255 && right_sensor ==255 && mid_sensor ==255) || (left_sensor == 0 && right_sensor == 0 && mid_sensor == 0))
+				if ((left_sensor == 255 && right_sensor == 255 && mid_sensor == 255) || (left_sensor == 0 && right_sensor == 0 && mid_sensor == 0))
 				{
 					break;
 				}
 
-			} while (right_sensor==255);
+			} while (right_sensor == 255);
 			stop();
 			printf("\n%d,%d,%d", left_sensor, mid_sensor, right_sensor);
 			//_delay_ms(1000);
 
 		}
 		//Node is detected
-		else if (left_sensor ==255 && right_sensor ==255 && mid_sensor ==255)
+		else if (left_sensor == 255 && right_sensor == 255 && mid_sensor == 255)
 		{
 			i++;
 			printf("\nnode detected");
@@ -123,7 +125,7 @@ void forward_wls(unsigned char node)
 
 			} while (left_sensor != 0 && right_sensor != 0);
 
-		//was continue here
+			//was continue here
 			break;
 
 		}
@@ -174,7 +176,7 @@ void left_turn_wls(void)
 		right_sensor = int(ADC_Conversion(3));
 		mid_sensor = int(ADC_Conversion(2));
 	}
-	
+
 }
 
 /*
@@ -196,10 +198,45 @@ void right_turn_wls(void)
 		left_sensor = int(ADC_Conversion(1));
 		right_sensor = int(ADC_Conversion(3));
 		mid_sensor = int(ADC_Conversion(2));
-	} 
+	}
 }
 
-int minDistance(float dist[], bool sptSet[])
+struct Node
+{
+	char data;
+	int weight;
+	struct Node* next;
+};
+
+struct Node* head_array[31];
+
+struct Node* create_node()
+{
+	struct Node* newnode;
+	newnode = (struct Node*)malloc(sizeof(struct Node));
+	newnode->next = NULL;
+	newnode->data = NULL;
+	newnode->weight = 0;
+	return newnode;
+}
+
+struct Node* create_adjacencylist(struct Node* head)
+{
+	struct Node* newnode, *temp;
+	int i = 1;
+	newnode = create_node();
+	head = newnode;
+	temp = head;
+	while (i < 5)
+	{
+		newnode = create_node();
+		temp->next = newnode;
+		temp = temp->next;
+		i++;
+	}
+}
+
+/*int minDistance(float dist[], bool sptSet[])
 {
 	// Initialize min value 
 	float min = FLOAT_MAX;
@@ -232,6 +269,18 @@ void dijkstra(float graph[V][V], int src)
 			if (!sptSet[v] && graph[u][v] && dist[u] != FLOAT_MAX && dist[u] + graph[u][v] < dist[v])
 				dist[v] = dist[u] + graph[u][v];
 	}
+}*/
+
+int dijkstra(struct Node* array, char src)
+{
+	int dist[31], visited[31];
+	for (int i = 0; i < 31; i++)
+	{
+		dist[i] = 5, visited[i] = 0;
+	}
+	dist[src] = 0;
+	for()
+
 }
 
 
@@ -244,7 +293,7 @@ void dijkstra(float graph[V][V], int src)
 * Example Call: e_shape();
 */
 void e_shape(void)
-{	
+{
 }
 
 
@@ -274,7 +323,7 @@ void Task_1_2(void)
 	//write your task 1.2 logic here
 
 								//   1    2    3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26 27  28  29  30  31  32  33	
-	float graph[V][V] = { {0.0,0.65,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.65},  //1
+	/*float graph[V][V] = { {0.0,0.65,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.65},  //1
 									{0.65,0.0,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0},	//2
 									{0.0,0.3,0.0,0.28,0.27,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0}, //3
 									{0.0,0.0,0.28,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0}, //4
@@ -310,17 +359,17 @@ void Task_1_2(void)
 
 	dijkstra(graph, 0);
 	forward_wls(1);
-//	stop();
+	//	stop();
 	printf("\nTake 1st Right");
 	right_turn_wls();
 	forward_wls(1);
-//	stop();
-	
+	//	stop();
+
 	printf("\nTake 2nd Right");
 	right_turn_wls();
 	forward_wls(1);
-//	stop();
-	
+	//	stop();
+
 	printf("\nTake Left");
 	left_turn_wls();
 	forward_wls(1);
@@ -328,11 +377,305 @@ void Task_1_2(void)
 	pick();
 	//_delay_ms(2000);
 //	stop();
-	
-//	printf("\nGo to pickup point");
-	
-	
-//	stop();
 
-	
+//	printf("\nGo to pickup point");
+
+
+//	stop();*/
+
+	struct Node* temp;
+	int i;
+
+	for (i = 0; i < 31; i++)
+	{
+		head_array[i] = create_adjacencylist(head_array[i]);
+		head_array[i]->data = (char)i;
+	}
+
+	temp = head_array[0];
+	temp = temp->next;
+	temp->data = '1';
+	temp->weight = 3;
+	temp = temp->next;
+	temp->data = '2';
+	temp->weight = 3;
+
+	temp = head_array[1];
+	temp = temp->next->next;
+	temp->data = '0';
+	temp->weight = 3;
+	temp = temp->next;
+	temp->data = '3';
+	temp->weight = 2;
+
+	temp = head_array[2];
+	temp = temp->next;
+	temp->data = '0';
+	temp->weight = 3;
+	temp = temp->next->next;
+	temp->data = '4';
+	temp->weight = 2;
+
+	temp = head_array[3];
+	temp = temp->next;
+	temp->data = '3L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '3R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '5';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '1';
+	temp->weight = 2;
+
+	temp = head_array[4];
+	temp = temp->next;
+	temp->data = '4L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '4R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '6';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '2';
+	temp->weight = 2;
+
+	temp = head_array[5];
+	temp = temp->next;
+	temp->data = '5L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '6';
+	temp->weight = 4;
+	temp = temp->next;
+	temp->data = '7';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '3';
+	temp->weight = 2;
+
+	temp = head_array[6];
+	temp = temp->next;
+	temp->data = '5';
+	temp->weight = 4;
+	temp = temp->next;
+	temp->data = '6R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '8';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '4';
+	temp->weight = 2;
+
+	temp = head_array[7];
+	temp = temp->next;
+	temp->data = '7L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '7R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '9';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '5';
+	temp->weight = 2;
+
+	temp = head_array[8];
+	temp = temp->next;
+	temp->data = '8L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '8R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '10';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '6';
+	temp->weight = 2;
+
+	temp = head_array[9];
+	temp = temp->next;
+	temp->data = '9L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '10';
+	temp->weight = 4;
+	temp = temp->next;
+	temp->data = '11';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '7';
+	temp->weight = 2;
+
+	temp = head_array[10];
+	temp = temp->next;
+	temp->data = '9';
+	temp->weight = 4;
+	temp = temp->next;
+	temp->data = '10R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '12';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '8';
+	temp->weight = 2;
+
+	temp = head_array[11];
+	temp = temp->next;
+	temp->data = '11L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '11R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '13';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '9';
+	temp->weight = 2;
+
+	temp = head_array[12];
+	temp = temp->next;
+	temp->data = '12L';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '12R';
+	temp->weight = 1;
+	temp = temp->next;
+	temp->data = '14';
+	temp->weight = 2;
+	temp = temp->next;
+	temp->data = '10';
+	temp->weight = 2;
+
+	temp = head_array[13];
+	temp = temp->next->next;
+	temp->data = '15';
+	temp->weight = 3;
+	temp = temp->next->next;
+	temp->data = '11';
+	temp->weight = 2;
+
+	temp = head_array[14];
+	temp = temp->next;
+	temp->data = '15';
+	temp->weight = 3;
+	temp = temp->next->next->next;
+	temp->data = '12';
+	temp->weight = 2;
+
+	temp = head_array[15];
+	temp = temp->next;
+	temp->data = '13';
+	temp->weight = 3;
+	temp = temp->next;
+	temp->data = '14';
+	temp->weight = 3;
+
+	temp = head_array[16];
+	temp->data = '3L';
+	temp = temp->next->next;
+	temp->data = '3';
+	temp->weight = 1;
+
+	temp = head_array[17];
+	temp->data = '3R';
+	temp = temp->next;
+	temp->data = '3';
+	temp->weight = 1;
+
+	temp = head_array[18];
+	temp->data = '4L';
+	temp = temp->next->next;
+	temp->data = '4';
+	temp->weight = 1;
+
+	temp = head_array[19];
+	temp->data = '4R';
+	temp = temp->next;
+	temp->data = '4';
+	temp->weight = 1;
+
+	temp = head_array[20];
+	temp->data = '5L';
+	temp = temp->next->next;
+	temp->data = '5';
+	temp->weight = 1;
+
+	temp = head_array[21];
+	temp->data = '6R';
+	temp = temp->next;
+	temp->data = '6';
+	temp->weight = 1;
+
+	temp = head_array[22];
+	temp->data = '7L';
+	temp = temp->next->next;
+	temp->data = '7';
+	temp->weight = 1;
+
+	temp = head_array[23];
+	temp->data = '7R';
+	temp = temp->next;
+	temp->data = '7';
+	temp->weight = 1;
+
+	temp = head_array[24];
+	temp->data = '8L';
+	temp = temp->next->next;
+	temp->data = '8';
+	temp->weight = 1;
+
+	temp = head_array[25];
+	temp->data = '8R';
+	temp = temp->next;
+	temp->data = '8';
+	temp->weight = 1;
+
+	temp = head_array[26];
+	temp->data = '9L';
+	temp = temp->next->next;
+	temp->data = '9';
+	temp->weight = 1;
+
+	temp = head_array[27];
+	temp->data = '10R';
+	temp = temp->next;
+	temp->data = '10';
+	temp->weight = 1;
+
+	temp = head_array[28];
+	temp->data = '11L';
+	temp = temp->next->next;
+	temp->data = '11';
+	temp->weight = 1;
+
+	temp = head_array[29];
+	temp->data = '11R';
+	temp = temp->next;
+	temp->data = '11';
+	temp->weight = 1;
+
+	temp = head_array[30];
+	temp->data = '12L';
+	temp = temp->next->next;
+	temp->data = '12';
+	temp->weight = 1;
+
+	temp = head_array[31];
+	temp->data = '12R';
+	temp = temp->next;
+	temp->data = '12';
+	temp->weight = 1;
+
+
+
 }
