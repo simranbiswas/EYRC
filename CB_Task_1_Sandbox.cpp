@@ -88,7 +88,7 @@ void forward_wls_white()
 			// printf("\nbit left");
 			for (j = 0; j < 100000 * k; j++)
 			{
-				printf("\nstablizingbot");
+				//printf("\nstablizingbot");
 				velocity(0, 5);
 				//left();
 				left_sensor = int(ADC_Conversion(1));
@@ -112,7 +112,7 @@ void forward_wls_white()
 				//_delay_ms(100);
 				for (j = 0; j < 100000 * k; j++)
 				{
-					printf("\nstablizingbot");
+					//printf("\nstablizingbot");
 					velocity(0, 5);    //To bring back original position
 					//right();
 				}
@@ -121,7 +121,7 @@ void forward_wls_white()
 				forward();
 				for (j = 0; j < 100000 * k; j++)
 				{
-					printf("\nstablizingbot");
+					//printf("\nstablizingbot");
 					velocity(5, 0);
 					//right();
 					left_sensor = int(ADC_Conversion(1));
@@ -141,7 +141,7 @@ void forward_wls_white()
 				back();
 				for (j = 0; j < 100000 * k; j++)
 				{
-					printf("\nstablizingbot");
+					//printf("\nstablizingbot");
 					velocity(5, 0);
 
 					//left();//To bring back original position
@@ -248,7 +248,7 @@ void forward_wls(unsigned char node)
 			// printf("\nbit left");
 			for (j = 0; j < 300000 * k; j++)
 			{
-				printf("\nstablizingbot");
+				//printf("\nstablizingbot");
 				velocity(0, 4);
 				//left();
 				left_sensor = int(ADC_Conversion(1));
@@ -273,7 +273,7 @@ void forward_wls(unsigned char node)
 				//_delay_ms(100);
 				for (j = 0; j < 300000 * k; j++)
 				{
-					printf("\nstablizingbot");
+					//printf("\nstablizingbot");
 					velocity(0, 4);    //To bring back original position
 					//right();
 				}
@@ -283,7 +283,7 @@ void forward_wls(unsigned char node)
 				velocity(100, 100);
 				for (j = 0; j < 300000 * k; j++)
 				{
-					printf("\nstablizingbot");
+					//printf("\nstablizingbot");
 					velocity(4, 0);
 					//right();
 					left_sensor = int(ADC_Conversion(1));
@@ -304,7 +304,7 @@ void forward_wls(unsigned char node)
 				velocity(100, 100);
 				for (j = 0; j < 300000 * k; j++)
 				{
-					printf("\nstablizingbot");
+					//printf("\nstablizingbot");
 					velocity(4, 0);
 
 					//left();//To bring back original position
@@ -572,7 +572,7 @@ void check_node()
 		// printf("\nbit left");
 		for (j = 0; j < 30000; j++)
 		{
-			printf("\nstablizingbot");
+			//printf("\nstablizingbot");
 			velocity(0, 4);
 			//left();
 			left_sensor = int(ADC_Conversion(1));
@@ -597,7 +597,7 @@ void check_node()
 			//_delay_ms(100);
 			for (j = 0; j < 30000; j++)
 			{
-				printf("\nstablizingbot");
+				//printf("\nstablizingbot");
 				velocity(0, 4);    //To bring back original position
 				//right();
 			}
@@ -607,7 +607,7 @@ void check_node()
 			velocity(100, 100);
 			for (j = 0; j < 30000; j++)
 			{
-				printf("\nstablizingbot");
+				//printf("\nstablizingbot");
 				velocity(4, 0);
 				//right();
 				left_sensor = int(ADC_Conversion(1));
@@ -628,7 +628,7 @@ void check_node()
 			velocity(100, 100);
 			for (j = 0; j < 30000; j++)
 			{
-				printf("\nstablizingbot");
+				//printf("\nstablizingbot");
 				velocity(4, 0);
 
 				//left();//To bring back original position
@@ -949,22 +949,22 @@ void orientation(int current, int next, int last)
 	{
 		if (last % 2 == 0 && last > 15)
 		{
-			left_turn_wls();
+			left();
 		}
 		else if (last % 2 != 0 && last > 15)
 		{
-			right_turn_wls();
+			right();
 		}
 	}
 	else
 	{
 		if (last % 2 == 0 && last > 15)
 		{
-			right_turn_wls();
+			right();
 		}
 		else if (last % 2 != 0 && last > 15)
 		{
-			left_turn_wls();
+			left();
 		}
 	}
 }
@@ -1389,9 +1389,13 @@ void Task_1_2(void)
 		mid_sensor = int(ADC_Conversion(2));
 	}
 	forward_wls(1);
+	stop();
+	_delay_ms(500);
 
 	dijkstra(g, 4, 20);
 	orientation(node[0], node[1], last_node);
+	//left();
+	last_node = dest;
 	for (i = 1; i < m-1; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
