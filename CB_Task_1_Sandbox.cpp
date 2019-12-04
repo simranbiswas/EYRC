@@ -789,6 +789,7 @@ void traverse_up(int initial, int final)
 			break;
 		temp = temp->next;
 	}
+	//_delay_ms(100);
 	switch (i)
 	{
 	case 1: left_turn_wls();
@@ -828,6 +829,7 @@ void traverse_down(int initial, int final)
 			break;
 		temp = temp->next;
 	}
+	printf("\n%d", i);
 	switch (i)
 	{
 	case 2: left_turn_wls();
@@ -855,7 +857,7 @@ void traverse_down(int initial, int final)
 	}
 }
 
-int node[V], count = 0, m = 1, dest, source, parent[V];
+int node[V], count = 0, m = 0, dest, source, parent[V], last_node;;
 
 
 int minDistance(int dist[], bool sptSet[])
@@ -907,7 +909,7 @@ void dijkstra(int graph[V][V], int src, int destination)
 {
 	dest = destination;
 	int i;
-
+	m = 0;
 	int dist[V];
 
 	bool sptSet[V];
@@ -937,8 +939,34 @@ void dijkstra(int graph[V][V], int src, int destination)
 				dist[v] = dist[u] + graph[u][v];
 			}
 	}
-	
+	node[m++] = src;
 	printSolution(dist, V, parent, src);
+}
+
+void orientation(int current, int next, int last)
+{
+	if (next > current)
+	{
+		if (last % 2 == 0 && last > 15)
+		{
+			left_turn_wls();
+		}
+		else if (last % 2 != 0 && last > 15)
+		{
+			right_turn_wls();
+		}
+	}
+	else
+	{
+		if (last % 2 == 0 && last > 15)
+		{
+			right_turn_wls();
+		}
+		else if (last % 2 != 0 && last > 15)
+		{
+			left_turn_wls();
+		}
+	}
 }
 
 /*
@@ -1328,15 +1356,26 @@ void Task_1_2(void)
 
 	forward_wls(1);
 	dijkstra(g, 0, 18);
-	//traverse_down(0, node[0]);
-	if (node[0] == 1)
+	last_node = dest;
+	traverse_down(node[0], node[1]);
+	if (node[1] == 1)
+	{
 		right_turn_wls();
+	}
 	else
+	{
 		left_turn_wls();
-	for (i = 1; i < m; i++)
+	}
+	//forward_wls(1);
+	//left_turn_wls();
+	for (i = 1; i < m-1; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
+		printf(" Node traversed");
 	}
+	printf("Loop exit");
+	stop();
+	_delay_ms(2000);
 	pick();
 	mid_sensor = int(ADC_Conversion(2));
 	while (mid_sensor != 0)
@@ -1352,7 +1391,8 @@ void Task_1_2(void)
 	forward_wls(1);
 
 	dijkstra(g, 4, 20);
-	for (i = 1; i < m; i++)
+	orientation(node[0], node[1], last_node);
+	for (i = 1; i < m-1; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
 	}
@@ -1370,7 +1410,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	/*dijkstra(g, 5);//, 30);
+	/*dijkstra(g, 5, 30);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1389,7 +1429,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 12);//, 20); //
+	dijkstra(g, 12, 20); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1408,7 +1448,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 5);//, 22);
+	dijkstra(g, 5, 22);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1427,7 +1467,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 7);//, 21); //
+	dijkstra(g, 7, 21); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1446,7 +1486,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 6);//, 28);
+	dijkstra(g, 6, 28);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1465,7 +1505,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 11);//, 21); //
+	dijkstra(g, 11, 21); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1484,7 +1524,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 6);//, 24);
+	dijkstra(g, 6, 24);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1503,45 +1543,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 8);//, 26);
-	for (i = 1; i < count; i++)
-	{
-		traverse_up(node[i], node[i + 1]);
-	}
-	place();
-	mid_sensor = int(ADC_Conversion(2));
-	while (mid_sensor != 0)
-	{
-		left();
-		mid_sensor = int(ADC_Conversion(2));
-	}
-	while (mid_sensor != 255)
-	{
-		left();
-		mid_sensor = int(ADC_Conversion(2));
-	}
-	forward_wls(1);
-
-	dijkstra(g, 9);//, 19); //
-	for (i = 1; i < count; i++)
-	{
-		traverse_down(node[i], node[i + 1]);
-	}
-	pick();
-	mid_sensor = int(ADC_Conversion(2));
-	while (mid_sensor != 0)
-	{
-		left();
-		mid_sensor = int(ADC_Conversion(2));
-	}
-	while (mid_sensor != 255)
-	{
-		left();
-		mid_sensor = int(ADC_Conversion(2));
-	}
-	forward_wls(1);
-
-	dijkstra(g, 4);//, 26);
+	dijkstra(g, 8, 26);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1560,7 +1562,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 9);//, 16); //
+	dijkstra(g, 9, 19); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1579,7 +1581,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 3);//, 27);
+	dijkstra(g, 4, 26);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1598,7 +1600,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 10);//, 17); //
+	dijkstra(g, 9, 16); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1617,7 +1619,45 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 3);//, 15);
+	dijkstra(g, 3, 27);
+	for (i = 1; i < count; i++)
+	{
+		traverse_up(node[i], node[i + 1]);
+	}
+	place();
+	mid_sensor = int(ADC_Conversion(2));
+	while (mid_sensor != 0)
+	{
+		left();
+		mid_sensor = int(ADC_Conversion(2));
+	}
+	while (mid_sensor != 255)
+	{
+		left();
+		mid_sensor = int(ADC_Conversion(2));
+	}
+	forward_wls(1);
+
+	dijkstra(g, 10, 17); //
+	for (i = 1; i < count; i++)
+	{
+		traverse_down(node[i], node[i + 1]);
+	}
+	pick();
+	mid_sensor = int(ADC_Conversion(2));
+	while (mid_sensor != 0)
+	{
+		left();
+		mid_sensor = int(ADC_Conversion(2));
+	}
+	while (mid_sensor != 255)
+	{
+		left();
+		mid_sensor = int(ADC_Conversion(2));
+	}
+	forward_wls(1);
+
+	dijkstra(g, 3, 15);
 	for (i = 1; i < count; i++)
 	{
 		traverse_up(node[i], node[i + 1]);
@@ -1625,7 +1665,7 @@ void Task_1_2(void)
 	right_turn_wls();
 	place();
 
-	dijkstra(g, 15);//, 25); //
+	dijkstra(g, 15, 25); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1644,7 +1684,7 @@ void Task_1_2(void)
 	}
 	forward_wls(1);
 
-	dijkstra(g, 8);//, 15); //
+	dijkstra(g, 8, 15); //
 	for (i = 1; i < count; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
@@ -1652,7 +1692,7 @@ void Task_1_2(void)
 	left_turn_wls();
 	place();
 
-	dijkstra(g, 15);//, 0); //
+	dijkstra(g, 15, 0); //
 	for (i = 1; i < count-1; i++)
 	{
 		traverse_down(node[i], node[i + 1]);
